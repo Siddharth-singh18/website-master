@@ -188,7 +188,7 @@ const RegistrationForm = () => {
         hackerrankProfile1: "",
         branch1: "",
         year1: "",
-        /*section1 removed*/ gender1: "",
+        gender1: "",
         hosteller1: "",
         studentNumber1: "",
         rollNumber1: "",
@@ -198,7 +198,7 @@ const RegistrationForm = () => {
         hackerrankProfile2: "",
         branch2: "",
         year2: "",
-        /*section2 removed*/ gender2: "",
+        gender2: "",
         hosteller2: "",
         studentNumber2: "",
         rollNumber2: "",
@@ -641,7 +641,7 @@ const RegistrationForm = () => {
           <div>
             <ReCAPTCHA
               ref={recaptchaRef}
-              sitekey="6LcnA_grAAAAAKa9HEJZvW-7ie-Yl3Efitd2NCew"
+              sitekey="6LdiBPkrAAAAAE2m6IRWNs3Gu37Ps6y-MpfwOLRA"
               onChange={(value) => setCaptchaValue(value)}
               theme="dark"
             />
