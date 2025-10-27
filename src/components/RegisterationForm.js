@@ -12,7 +12,6 @@ const RegistrationForm = () => {
     hackerrankProfile1: "",
     branch1: "",
     year1: "",
-
     gender1: "",
     hosteller1: "",
     studentNumber1: "",
@@ -48,6 +47,7 @@ const RegistrationForm = () => {
       year1,
       hackerrankProfile1,
       hosteller1,
+      studentNumber1,
       fullName2,
       emailId2,
       phoneNumber2,
@@ -56,10 +56,12 @@ const RegistrationForm = () => {
       year2,
       hackerrankProfile2,
       hosteller2,
+      studentNumber2,
     } = formData;
 
     if (!fullName1.trim() || !/^[a-zA-Z\s]+$/.test(fullName1)) {
-      tempErrors.fullName1 = "Please enter Member 1's valid name.";
+      tempErrors.fullName1 =
+        "Please enter Member 1's valid name (alphabets only).";
       isValid = false;
     }
     if (!emailId1.endsWith("@akgec.ac.in")) {
@@ -71,12 +73,17 @@ const RegistrationForm = () => {
         "Member 1's Phone must be a valid 10-digit number.";
       isValid = false;
     }
-    if (!rollNumber1.trim()) {
-      tempErrors.rollNumber1 = "Member 1's Roll No is required.";
+    if (!rollNumber1.trim() || !/^\d+$/.test(rollNumber1)) {
+      tempErrors.rollNumber1 = "Member 1's Roll No must contain only digits.";
       isValid = false;
     }
     if (!branch1) {
       tempErrors.branch1 = "Please select Member 1's Branch.";
+      isValid = false;
+    }
+    if (!studentNumber1.trim() || !/^\d+$/.test(studentNumber1)) {
+      tempErrors.studentNumber1 =
+        "Member 1's Student No must contain only digits.";
       isValid = false;
     }
     if (!year1) {
@@ -93,7 +100,8 @@ const RegistrationForm = () => {
     }
 
     if (!fullName2.trim() || !/^[a-zA-Z\s]+$/.test(fullName2)) {
-      tempErrors.fullName2 = "Please enter Member 2's valid name.";
+      tempErrors.fullName2 =
+        "Please enter Member 2's valid name (alphabets only).";
       isValid = false;
     }
     if (!emailId2.endsWith("@akgec.ac.in")) {
@@ -105,12 +113,17 @@ const RegistrationForm = () => {
         "Member 2's Phone must be a valid 10-digit number.";
       isValid = false;
     }
-    if (!rollNumber2.trim()) {
-      tempErrors.rollNumber2 = "Member 2's Roll No is required.";
+    if (!rollNumber2.trim() || !/^\d+$/.test(rollNumber2)) {
+      tempErrors.rollNumber2 = "Member 2's Roll No must contain only digits.";
       isValid = false;
     }
     if (!branch2) {
       tempErrors.branch2 = "Please select Member 2's Branch.";
+      isValid = false;
+    }
+    if (!studentNumber2.trim() || !/^\d+$/.test(studentNumber2)) {
+      tempErrors.studentNumber2 =
+        "Member 2's Student No must contain only digits.";
       isValid = false;
     }
     if (!year2) {
@@ -154,13 +167,66 @@ const RegistrationForm = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     let processedValue = value;
+    let isCurrentlyValid = true;
+    let inlineErrorMsg = null;
+
+    if (name === "fullName1" || name === "fullName2") {
+      if (value && !/^[a-zA-Z\s]*$/.test(value)) {
+        inlineErrorMsg = "Only letters and spaces allowed.";
+        isCurrentlyValid = false;
+      }
+    } else if (
+      name === "phoneNumber1" ||
+      name === "phoneNumber2" ||
+      name === "rollNumber1" ||
+      name === "rollNumber2" ||
+      name === "studentNumber1" ||
+      name === "studentNumber2"
+    ) {
+      if (value && !/^[0-9]*$/.test(value)) {
+        inlineErrorMsg = "Only numbers allowed.";
+        isCurrentlyValid = false;
+      }
+    } else if (name === "emailId1" || name === "emailId2") {
+      if (value && !/^[a-zA-Z0-9._%+-@]*$/.test(value)) {
+        inlineErrorMsg = "Invalid character for email.";
+        isCurrentlyValid = false;
+      }
+      if (
+        value.includes("@") &&
+        !value.endsWith("@akgec.ac.in") &&
+        value.split("@")[1].length > 0
+      ) {
+        if (!errors[name]?.includes("must end with")) {
+          inlineErrorMsg = "Email must end with @akgec.ac.in";
+        }
+      }
+    }
+
     if (name === "hosteller1" || name === "hosteller2") {
       processedValue = value === "yes" ? true : value === "no" ? false : "";
     }
-    setFormData((prevState) => ({ ...prevState, [name]: processedValue }));
-    if (errors[name]) {
-      setErrors((prevErrors) => ({ ...prevErrors, [name]: null }));
+
+    if (!isCurrentlyValid) {
+      setErrors((prevErrors) => ({ ...prevErrors, [name]: inlineErrorMsg }));
+      return;
+    } else {
+      if (errors[name]) {
+        setErrors((prevErrors) => {
+          const newErrors = { ...prevErrors };
+          delete newErrors[name];
+          return newErrors;
+        });
+      }
+      if (inlineErrorMsg) {
+        setErrors((prevErrors) => ({ ...prevErrors, [name]: inlineErrorMsg }));
+      }
     }
+
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: processedValue,
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -352,6 +418,9 @@ const RegistrationForm = () => {
               required
               className={styles.input}
             />
+            {errors.studentNumber1 && (
+              <p className={styles.errorText}>{errors.studentNumber1}</p>
+            )}
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="year1" className={styles.label}>
@@ -371,7 +440,6 @@ const RegistrationForm = () => {
             </select>
             {errors.year1 && <p className={styles.errorText}>{errors.year1}</p>}
           </div>
-          {/* Section 1 field removed */}
           <div className={styles.formGroup}>
             <label htmlFor="gender1" className={styles.label}>
               Gender (Member 1):<span>*</span>
@@ -546,6 +614,9 @@ const RegistrationForm = () => {
               required
               className={styles.input}
             />
+            {errors.studentNumber2 && (
+              <p className={styles.errorText}>{errors.studentNumber2}</p>
+            )}
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="year2" className={styles.label}>
@@ -565,7 +636,6 @@ const RegistrationForm = () => {
             </select>
             {errors.year2 && <p className={styles.errorText}>{errors.year2}</p>}
           </div>
-          {/* Section 2 field removed */}
           <div className={styles.formGroup}>
             <label htmlFor="gender2" className={styles.label}>
               Gender (Member 2):<span>*</span>
