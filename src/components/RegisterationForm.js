@@ -234,7 +234,6 @@ const RegistrationForm = () => {
     }));
   };
 
-  // --- YAHAN BADLAAV KIYA GAYA HAI (catch block) ---
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
@@ -284,8 +283,8 @@ const RegistrationForm = () => {
       recaptchaRef.current.reset();
       setCaptchaValue(null);
 
-      const apiErrorsObject = error.response?.data?.errors; // Try to get an 'errors' object
-      const apiErrorMessage = error.response?.data?.message; // Try to get a 'message' string
+      const apiErrorsObject = error.response?.data?.errors;
+      const apiErrorMessage = error.response?.data?.message;
 
       if (apiErrorsObject && typeof apiErrorsObject === "object") {
         if (
@@ -300,8 +299,7 @@ const RegistrationForm = () => {
         ) {
           apiErrorsObject.year1 = apiErrorsObject.year2;
         }
-
-        setErrors(apiErrorsObject); // Error object ko seedha set kar do
+        setErrors(apiErrorsObject);
         setMessage("Registration failed. Please check the errors below. ❌");
       } else if (apiErrorMessage && typeof apiErrorMessage === "string") {
         const newErrors = {};
@@ -328,9 +326,7 @@ const RegistrationForm = () => {
 
         if (Object.keys(newErrors).length > 0) {
           setErrors(newErrors);
-          setMessage(
-            "Registration failed. Please fill the correct details. ❌"
-          );
+          setMessage("Registration failed. Please check the errors below. ❌");
         } else {
           setMessage(`Registration failed. ${apiErrorMessage} ❌`);
         }
@@ -343,7 +339,9 @@ const RegistrationForm = () => {
   return (
     <div className={styles.formContainer}>
       <form onSubmit={handleSubmit} className={styles.form}>
-        <h2>CODE++ Registration</h2>
+        <h2>
+          <span className={styles.highlight}>CODE++</span> Registration
+        </h2>
         <p className={styles.description}>
           Organized by Programming Club, AKGEC
         </p>
@@ -360,16 +358,14 @@ const RegistrationForm = () => {
               onChange={handleChange}
               required
               className={styles.input}
+              placeholder="Enter your team name"
             />
-            {errors.teamName && (
-              <p className={styles.errorText}>{errors.teamName}</p>
-            )}
           </div>
 
           <h3 className={styles.gridHeading}>Member 1 Details</h3>
           <div className={styles.formGroup}>
             <label htmlFor="fullName1" className={styles.label}>
-              Full Name (Member 1):<span>*</span>
+              Full Name <span>*</span>
             </label>
             <input
               type="text"
@@ -379,6 +375,7 @@ const RegistrationForm = () => {
               onChange={handleChange}
               required
               className={styles.input}
+              placeholder="Enter member 1's full name"
             />
             {errors.fullName1 && (
               <p className={styles.errorText}>{errors.fullName1}</p>
@@ -386,7 +383,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="emailId1" className={styles.label}>
-              Email (Member 1):<span>*</span>
+              Email <span>*</span>
             </label>
             <input
               type="email"
@@ -396,6 +393,7 @@ const RegistrationForm = () => {
               onChange={handleChange}
               required
               className={styles.input}
+              placeholder="xyzstudentno@akgec.ac.in"
             />
             {errors.emailId1 && (
               <p className={styles.errorText}>{errors.emailId1}</p>
@@ -403,7 +401,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="phoneNumber1" className={styles.label}>
-              Phone Number (Member 1):<span>*</span>
+              Phone Number <span>*</span>
             </label>
             <input
               type="tel"
@@ -413,6 +411,8 @@ const RegistrationForm = () => {
               onChange={handleChange}
               required
               className={styles.input}
+              placeholder="Enter 10-digit mobile number"
+              maxLength={10}
             />
             {errors.phoneNumber1 && (
               <p className={styles.errorText}>{errors.phoneNumber1}</p>
@@ -420,7 +420,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="rollNumber1" className={styles.label}>
-              Roll Number (Member 1):<span>*</span>
+              Roll Number <span>*</span>
             </label>
             <input
               type="text"
@@ -430,6 +430,7 @@ const RegistrationForm = () => {
               onChange={handleChange}
               required
               className={styles.input}
+              placeholder="Enter university roll number"
             />
             {errors.rollNumber1 && (
               <p className={styles.errorText}>{errors.rollNumber1}</p>
@@ -437,7 +438,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="branch1" className={styles.label}>
-              Branch (Member 1):<span>*</span>
+              Branch <span>*</span>
             </label>
             <select
               id="branch1"
@@ -467,7 +468,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="studentNumber1" className={styles.label}>
-              Student Number (Member 1):<span>*</span>
+              Student Number <span>*</span>
             </label>
             <input
               type="text"
@@ -477,6 +478,7 @@ const RegistrationForm = () => {
               onChange={handleChange}
               required
               className={styles.input}
+              placeholder="Enter student number"
             />
             {errors.studentNumber1 && (
               <p className={styles.errorText}>{errors.studentNumber1}</p>
@@ -484,7 +486,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="year1" className={styles.label}>
-              Year (Member 1):<span>*</span>
+              Year <span>*</span>
             </label>
             <select
               id="year1"
@@ -502,7 +504,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="gender1" className={styles.label}>
-              Gender (Member 1):<span>*</span>
+              Gender <span>*</span>
             </label>
             <select
               id="gender1"
@@ -520,7 +522,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="hosteller1" className={styles.label}>
-              Hosteller (Member 1):<span>*</span>
+              Hosteller <span>*</span>
             </label>
             <select
               id="hosteller1"
@@ -546,7 +548,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup} style={{ gridColumn: "1 / -1" }}>
             <label htmlFor="hackerrankProfile1" className={styles.label}>
-              HackerRank ID (Member 1):<span>*</span>
+              HackerRank ID <span>*</span>
             </label>
             <input
               type="text"
@@ -556,6 +558,7 @@ const RegistrationForm = () => {
               onChange={handleChange}
               required
               className={styles.input}
+              placeholder="Enter HackerRank username"
             />
             {errors.hackerrankProfile1 && (
               <p className={styles.errorText}>{errors.hackerrankProfile1}</p>
@@ -565,7 +568,7 @@ const RegistrationForm = () => {
           <h3 className={styles.gridHeading}>Member 2 Details</h3>
           <div className={styles.formGroup}>
             <label htmlFor="fullName2" className={styles.label}>
-              Full Name (Member 2):<span>*</span>
+              Full Name <span>*</span>
             </label>
             <input
               type="text"
@@ -575,6 +578,7 @@ const RegistrationForm = () => {
               onChange={handleChange}
               required
               className={styles.input}
+              placeholder="Enter member 2's full name"
             />
             {errors.fullName2 && (
               <p className={styles.errorText}>{errors.fullName2}</p>
@@ -582,7 +586,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="emailId2" className={styles.label}>
-              Email (Member 2):<span>*</span>
+              Email <span>*</span>
             </label>
             <input
               type="email"
@@ -592,6 +596,7 @@ const RegistrationForm = () => {
               onChange={handleChange}
               required
               className={styles.input}
+              placeholder="name.studentno@akgec.ac.in"
             />
             {errors.emailId2 && (
               <p className={styles.errorText}>{errors.emailId2}</p>
@@ -609,6 +614,8 @@ const RegistrationForm = () => {
               onChange={handleChange}
               required
               className={styles.input}
+              placeholder="Enter 10-digit mobile number"
+              maxLength={10}
             />
             {errors.phoneNumber2 && (
               <p className={styles.errorText}>{errors.phoneNumber2}</p>
@@ -616,7 +623,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="rollNumber2" className={styles.label}>
-              Roll Number (Member 2):<span>*</span>
+              Roll Number <span>*</span>
             </label>
             <input
               type="text"
@@ -626,6 +633,7 @@ const RegistrationForm = () => {
               onChange={handleChange}
               required
               className={styles.input}
+              placeholder="Enter university roll number"
             />
             {errors.rollNumber2 && (
               <p className={styles.errorText}>{errors.rollNumber2}</p>
@@ -633,7 +641,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="branch2" className={styles.label}>
-              Branch (Member 2):<span>*</span>
+              Branch <span>*</span>
             </label>
             <select
               id="branch2"
@@ -663,7 +671,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="studentNumber2" className={styles.label}>
-              Student Number (Member 2):<span>*</span>
+              Student Number <span>*</span>
             </label>
             <input
               type="text"
@@ -673,6 +681,7 @@ const RegistrationForm = () => {
               onChange={handleChange}
               required
               className={styles.input}
+              placeholder="Enter student number"
             />
             {errors.studentNumber2 && (
               <p className={styles.errorText}>{errors.studentNumber2}</p>
@@ -680,7 +689,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="year2" className={styles.label}>
-              Year (Member 2):<span>*</span>
+              Year <span>*</span>
             </label>
             <select
               id="year2"
@@ -698,7 +707,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="gender2" className={styles.label}>
-              Gender (Member 2):<span>*</span>
+              Gender <span>*</span>
             </label>
             <select
               id="gender2"
@@ -710,13 +719,13 @@ const RegistrationForm = () => {
             >
               <option value="">Select Gender</option>
               <option value="male">Male</option>
-              <option valueM="female">Female</option>
+              <option value="female">Female</option>
               <option value="other">Other</option>
             </select>
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="hosteller2" className={styles.label}>
-              Hosteller (Member 2):<span>*</span>
+              Hosteller <span>*</span>
             </label>
             <select
               id="hosteller2"
@@ -742,7 +751,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup} style={{ gridColumn: "1 / -1" }}>
             <label htmlFor="hackerrankProfile2" className={styles.label}>
-              HackerRank ID (Member 2):<span>*</span>
+              HackerRank ID <span>*</span>
             </label>
             <input
               type="text"
@@ -752,6 +761,7 @@ const RegistrationForm = () => {
               onChange={handleChange}
               required
               className={styles.input}
+              placeholder="Enter HackerRank username"
             />
             {errors.hackerrankProfile2 && (
               <p className={styles.errorText}>{errors.hackerrankProfile2}</p>
@@ -771,7 +781,7 @@ const RegistrationForm = () => {
           <div>
             <ReCAPTCHA
               ref={recaptchaRef}
-              sitekey="6LdiBPkrAAAAAE2m6IRWNs3Gu37Ps6y-MpfwOLRA" // Your site key
+              sitekey="6LdiBPkrAAAAAE2m6IRWNs3Gu37Ps6y-MpfwOLRA"
               onChange={(value) => setCaptchaValue(value)}
               theme="dark"
             />
