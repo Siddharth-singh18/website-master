@@ -234,7 +234,7 @@ const RegistrationForm = () => {
     }));
   };
 
-  // --- YAHAN BADLAAV KIYA GAYA HAI ---
+  // --- YAHAN BADLAAV KIYA GAYA HAI (catch block) ---
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
@@ -243,7 +243,6 @@ const RegistrationForm = () => {
     setLoading(true);
     setErrors({});
     const payload = { ...formData, recaptchaToken: captchaValue };
-
     try {
       const response = await axios.post(
         "https://api.programmingclub.live/api/registration/team",
@@ -285,29 +284,43 @@ const RegistrationForm = () => {
       recaptchaRef.current.reset();
       setCaptchaValue(null);
 
-      const apiErrorMessage = error.response?.data?.message;
+      const apiErrorsObject = error.response?.data?.errors; // Try to get an 'errors' object
+      const apiErrorMessage = error.response?.data?.message; // Try to get a 'message' string
 
-      // Agar backend se error message string mein aaya hai
-      if (apiErrorMessage && typeof apiErrorMessage === "string") {
+      if (apiErrorsObject && typeof apiErrorsObject === "object") {
+        // SABSE ACCHA CASE: Backend ne ek 'errors' object bheja hai
+
+        // "Same year" error ko dono par lagao
+        if (
+          apiErrorsObject.year1 &&
+          apiErrorsObject.year1.includes("same year")
+        ) {
+          apiErrorsObject.year2 = apiErrorsObject.year1;
+        }
+        if (
+          apiErrorsObject.year2 &&
+          apiErrorsObject.year2.includes("same year")
+        ) {
+          apiErrorsObject.year1 = apiErrorsObject.year2;
+        }
+
+        setErrors(apiErrorsObject); // Error object ko seedha set kar do
+        setMessage("Registration failed. Please check the errors below. ❌");
+      } else if (apiErrorMessage && typeof apiErrorMessage === "string") {
+        // DOOSRA CASE: Backend ne lambi error string bheji hai (jaisa aapke screenshot mein hai)
         const newErrors = {};
-
-        // "Registration failed. " ko hata do
         const errorString = apiErrorMessage.replace(
           "Registration failed. ",
           ""
         );
-
-        // Har error ko comma (,) se todo
         const errorParts = errorString.split(", ");
 
         errorParts.forEach((part) => {
-          // "key: value" ko alag-alag karo
           const splitPoint = part.indexOf(":");
           if (splitPoint > -1) {
-            const key = part.substring(0, splitPoint).trim(); // Jaise 'studentNumber1'
-            const value = part.substring(splitPoint + 1).trim(); // Jaise 'Invalid student number'
+            const key = part.substring(0, splitPoint).trim();
+            const value = part.substring(splitPoint + 1).trim();
 
-            // "Same year" waale error ko dono par lagao
             if (key.includes("year") && value.includes("same year")) {
               newErrors.year1 = value;
               newErrors.year2 = value;
@@ -317,16 +330,15 @@ const RegistrationForm = () => {
           }
         });
 
-        // Agar newErrors object mein kuchh mila, toh use errors state mein daal do
         if (Object.keys(newErrors).length > 0) {
           setErrors(newErrors);
           setMessage("Registration failed. Please check the errors below. ❌");
         } else {
-          // Agar string ko tod nahin paaye, toh puraana message dikha do
+          // Agar string ko tod nahin paaye
           setMessage(`Registration failed. ${apiErrorMessage} ❌`);
         }
       } else {
-        // Agar koi aur error aaya
+        // SABSE KHARAB CASE: Kuch samajh nahin aaya
         setMessage("Registration failed. Please try again. ❌");
       }
     }
@@ -354,6 +366,9 @@ const RegistrationForm = () => {
               required
               className={styles.input}
             />
+            {errors.teamName && (
+              <p className={styles.errorText}>{errors.teamName}</p>
+            )}
           </div>
 
           <h3 className={styles.gridHeading}>Member 1 Details</h3>
@@ -700,7 +715,7 @@ const RegistrationForm = () => {
             >
               <option value="">Select Gender</option>
               <option value="male">Male</option>
-              <option value="female">Female</option>
+              <option valueM="female">Female</option>
               <option value="other">Other</option>
             </select>
           </div>
@@ -761,7 +776,7 @@ const RegistrationForm = () => {
           <div>
             <ReCAPTCHA
               ref={recaptchaRef}
-              sitekey="6LdiBPkrAAAAAE2m6IRWNs3Gu37Ps6y-MpfwOLRA" // Your site key
+              sitekey="6LfTkPYrAAAAAGWFFoQeaiSShSi8149xUu4yvkVG" // Your site key
               onChange={(value) => setCaptchaValue(value)}
               theme="dark"
             />
