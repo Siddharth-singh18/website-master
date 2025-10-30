@@ -154,6 +154,11 @@ const RegistrationForm = () => {
       tempErrors.rollNumber2 = "Roll numbers must be different.";
       isValid = false;
     }
+    if (year1 && year2 && year1 !== year2) {
+      tempErrors.year1 = "Both members must be from the same year.";
+      tempErrors.year2 = "Both members must be from the same year.";
+      isValid = false;
+    }
 
     if (!captchaValue) {
       tempErrors.captcha = "Please verify you are not a robot.";
@@ -229,6 +234,7 @@ const RegistrationForm = () => {
     }));
   };
 
+  // --- YAHAN BADLAAV KIYA GAYA HAI ---
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
@@ -237,6 +243,7 @@ const RegistrationForm = () => {
     setLoading(true);
     setErrors({});
     const payload = { ...formData, recaptchaToken: captchaValue };
+
     try {
       const response = await axios.post(
         "https://api.programmingclub.live/api/registration/team",
@@ -273,15 +280,58 @@ const RegistrationForm = () => {
       setCaptchaValue(null);
     } catch (error) {
       setLoading(false);
-      const apiErrorMessage =
-        error.response?.data?.message || "Please try again.";
-      setMessage(`Registration failed. ${apiErrorMessage} ❌`);
       setIsError(true);
       console.error("API Error:", error.response?.data || error.message);
       recaptchaRef.current.reset();
       setCaptchaValue(null);
+
+      const apiErrorMessage = error.response?.data?.message;
+
+      // Agar backend se error message string mein aaya hai
+      if (apiErrorMessage && typeof apiErrorMessage === "string") {
+        const newErrors = {};
+
+        // "Registration failed. " ko hata do
+        const errorString = apiErrorMessage.replace(
+          "Registration failed. ",
+          ""
+        );
+
+        // Har error ko comma (,) se todo
+        const errorParts = errorString.split(", ");
+
+        errorParts.forEach((part) => {
+          // "key: value" ko alag-alag karo
+          const splitPoint = part.indexOf(":");
+          if (splitPoint > -1) {
+            const key = part.substring(0, splitPoint).trim(); // Jaise 'studentNumber1'
+            const value = part.substring(splitPoint + 1).trim(); // Jaise 'Invalid student number'
+
+            // "Same year" waale error ko dono par lagao
+            if (key.includes("year") && value.includes("same year")) {
+              newErrors.year1 = value;
+              newErrors.year2 = value;
+            } else {
+              newErrors[key] = value;
+            }
+          }
+        });
+
+        // Agar newErrors object mein kuchh mila, toh use errors state mein daal do
+        if (Object.keys(newErrors).length > 0) {
+          setErrors(newErrors);
+          setMessage("Registration failed. Please check the errors below. ❌");
+        } else {
+          // Agar string ko tod nahin paaye, toh puraana message dikha do
+          setMessage(`Registration failed. ${apiErrorMessage} ❌`);
+        }
+      } else {
+        // Agar koi aur error aaya
+        setMessage("Registration failed. Please try again. ❌");
+      }
     }
   };
+  // --- BADLAAV YAHAN KHATAM ---
 
   return (
     <div className={styles.formContainer}>
@@ -711,7 +761,7 @@ const RegistrationForm = () => {
           <div>
             <ReCAPTCHA
               ref={recaptchaRef}
-              sitekey="6LdiBPkrAAAAAE2m6IRWNs3Gu37Ps6y-MpfwOLRA"
+              sitekey="6LfTkPYrAAAAAGWFFoQeaiSShSi8149xUu4yvkVG" // Your site key
               onChange={(value) => setCaptchaValue(value)}
               theme="dark"
             />
