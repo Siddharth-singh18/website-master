@@ -288,9 +288,6 @@ const RegistrationForm = () => {
       const apiErrorMessage = error.response?.data?.message; // Try to get a 'message' string
 
       if (apiErrorsObject && typeof apiErrorsObject === "object") {
-        // SABSE ACCHA CASE: Backend ne ek 'errors' object bheja hai
-
-        // "Same year" error ko dono par lagao
         if (
           apiErrorsObject.year1 &&
           apiErrorsObject.year1.includes("same year")
@@ -307,7 +304,6 @@ const RegistrationForm = () => {
         setErrors(apiErrorsObject); // Error object ko seedha set kar do
         setMessage("Registration failed. Please check the errors below. ❌");
       } else if (apiErrorMessage && typeof apiErrorMessage === "string") {
-        // DOOSRA CASE: Backend ne lambi error string bheji hai (jaisa aapke screenshot mein hai)
         const newErrors = {};
         const errorString = apiErrorMessage.replace(
           "Registration failed. ",
@@ -332,18 +328,17 @@ const RegistrationForm = () => {
 
         if (Object.keys(newErrors).length > 0) {
           setErrors(newErrors);
-          setMessage("Registration failed. Please check the errors below. ❌");
+          setMessage(
+            "Registration failed. Please fill the correct details. ❌"
+          );
         } else {
-          // Agar string ko tod nahin paaye
           setMessage(`Registration failed. ${apiErrorMessage} ❌`);
         }
       } else {
-        // SABSE KHARAB CASE: Kuch samajh nahin aaya
         setMessage("Registration failed. Please try again. ❌");
       }
     }
   };
-  // --- BADLAAV YAHAN KHATAM ---
 
   return (
     <div className={styles.formContainer}>
