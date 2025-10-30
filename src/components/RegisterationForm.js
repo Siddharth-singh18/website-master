@@ -776,7 +776,7 @@ const RegistrationForm = () => {
           <div>
             <ReCAPTCHA
               ref={recaptchaRef}
-              sitekey="6LfTkPYrAAAAAGWFFoQeaiSShSi8149xUu4yvkVG" // Your site key
+              sitekey="6LdiBPkrAAAAAE2m6IRWNs3Gu37Ps6y-MpfwOLRA" // Your site key
               onChange={(value) => setCaptchaValue(value)}
               theme="dark"
             />
