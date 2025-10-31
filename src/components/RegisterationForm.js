@@ -383,7 +383,7 @@ const RegistrationForm = () => {
               onChange={handleChange}
               required
               className={styles.input}
-              placeholder="name.studentno@akgec.ac.in"
+              placeholder="nameStudentno@akgec.ac.in"
             />
             {errors.emailId1 && (
               <p className={styles.errorText}>{errors.emailId1}</p>
@@ -585,7 +585,7 @@ const RegistrationForm = () => {
               onChange={handleChange}
               required
               className={styles.input}
-              placeholder="namestudentno@akgec.ac.in"
+              placeholder="nameStudentno@akgec.ac.in"
             />
             {errors.emailId2 && (
               <p className={styles.errorText}>{errors.emailId2}</p>
