@@ -326,7 +326,9 @@ const RegistrationForm = () => {
 
         if (Object.keys(newErrors).length > 0) {
           setErrors(newErrors);
-          setMessage("Registration failed. Please check the errors below. ❌");
+          setMessage(
+            "Registration failed. Please fill the details correctly. ❌"
+          );
         } else {
           setMessage(`Registration failed. ${apiErrorMessage} ❌`);
         }
