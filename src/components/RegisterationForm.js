@@ -45,7 +45,6 @@ const RegistrationForm = () => {
       rollNumber1,
       branch1,
       year1,
-      hackerrankProfile1,
       hosteller1,
       studentNumber1,
       fullName2,
@@ -54,7 +53,6 @@ const RegistrationForm = () => {
       rollNumber2,
       branch2,
       year2,
-      hackerrankProfile2,
       hosteller2,
       studentNumber2,
     } = formData;
@@ -88,10 +86,6 @@ const RegistrationForm = () => {
     }
     if (!year1) {
       tempErrors.year1 = "Please select Member 1's year.";
-      isValid = false;
-    }
-    if (!hackerrankProfile1.trim()) {
-      tempErrors.hackerrankProfile1 = "Member 1's HackerRank ID is required.";
       isValid = false;
     }
     if (hosteller1 === "") {
@@ -128,10 +122,6 @@ const RegistrationForm = () => {
     }
     if (!year2) {
       tempErrors.year2 = "Please select Member 2's year.";
-      isValid = false;
-    }
-    if (!hackerrankProfile2.trim()) {
-      tempErrors.hackerrankProfile2 = "Member 2's HackerRank ID is required.";
       isValid = false;
     }
     if (hosteller2 === "") {
@@ -326,9 +316,7 @@ const RegistrationForm = () => {
 
         if (Object.keys(newErrors).length > 0) {
           setErrors(newErrors);
-          setMessage(
-            "Registration failed. Please fill the correct details. ❌"
-          );
+          setMessage("Registration failed. Please check the errors below. ❌");
         } else {
           setMessage(`Registration failed. ${apiErrorMessage} ❌`);
         }
@@ -395,7 +383,7 @@ const RegistrationForm = () => {
               onChange={handleChange}
               required
               className={styles.input}
-              placeholder="xyzstudentno@akgec.ac.in"
+              placeholder="name.studentno@akgec.ac.in"
             />
             {errors.emailId1 && (
               <p className={styles.errorText}>{errors.emailId1}</p>
@@ -550,7 +538,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup} style={{ gridColumn: "1 / -1" }}>
             <label htmlFor="hackerrankProfile1" className={styles.label}>
-              HackerRank ID <span>*</span>
+              HackerRank ID
             </label>
             <input
               type="text"
@@ -558,9 +546,8 @@ const RegistrationForm = () => {
               name="hackerrankProfile1"
               value={formData.hackerrankProfile1}
               onChange={handleChange}
-              required
               className={styles.input}
-              placeholder="Enter HackerRank username"
+              placeholder="Enter HackerRank ID "
             />
             {errors.hackerrankProfile1 && (
               <p className={styles.errorText}>{errors.hackerrankProfile1}</p>
@@ -598,7 +585,7 @@ const RegistrationForm = () => {
               onChange={handleChange}
               required
               className={styles.input}
-              placeholder="name.studentno@akgec.ac.in"
+              placeholder="namestudentno@akgec.ac.in"
             />
             {errors.emailId2 && (
               <p className={styles.errorText}>{errors.emailId2}</p>
@@ -606,7 +593,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="phoneNumber2" className={styles.label}>
-              Phone Number (Member 2):<span>*</span>
+              Phone Number <span>*</span>
             </label>
             <input
               type="tel"
@@ -753,7 +740,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup} style={{ gridColumn: "1 / -1" }}>
             <label htmlFor="hackerrankProfile2" className={styles.label}>
-              HackerRank ID <span>*</span>
+              HackerRank ID
             </label>
             <input
               type="text"
@@ -761,9 +748,8 @@ const RegistrationForm = () => {
               name="hackerrankProfile2"
               value={formData.hackerrankProfile2}
               onChange={handleChange}
-              required
               className={styles.input}
-              placeholder="Enter HackerRank username"
+              placeholder="Enter HackerRank ID"
             />
             {errors.hackerrankProfile2 && (
               <p className={styles.errorText}>{errors.hackerrankProfile2}</p>

@@ -9,7 +9,6 @@ function EventPopup() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Page load par popup dikhayein
     setShow(true);
   }, []);
 
@@ -17,7 +16,7 @@ function EventPopup() {
 
   const handleRegister = () => {
     handleClose();
-    navigate("/event-register"); // Register page par bhej dega
+    navigate("/event-register");
   };
 
   return (
@@ -37,8 +36,6 @@ function EventPopup() {
         <div className="event-content">
           <h3>Programming Club Presents</h3>
 
-          {/* --- DETAILS YAHAN BADLI HAIN --- */}
-
           <h2>CODE++</h2>
 
           <p className="event-details">
@@ -47,9 +44,9 @@ function EventPopup() {
             problem-solving.
           </p>
           <ul className="event-info">
-            <li>📅 Date: Nov 10, 2025 </li>
-            <li>⏰ Time: 5:00 PM - 7:00 PM</li>
-            <li>📍 Venue: Online (HackerRank)</li>
+            <li>📅 Date: Nov 04, 2025 </li>
+            <li>⏰ Time: 4:00 PM - 7:00 PM</li>
+            <li>📍 Venue: CSIT BLOCK</li>
           </ul>
           <p className="event-description">
             Why participate?
