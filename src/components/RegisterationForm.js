@@ -3,7 +3,6 @@ import axios from "axios";
 import styles from "./RegisterationForm.module.css";
 import ReCAPTCHA from "react-google-recaptcha";
 
-// Aapka diya gaya branchCodes object
 const branchCodes = {
   ME: "40",
   ECE: "31",
@@ -55,9 +54,10 @@ const RegistrationForm = () => {
   const [captchaValue, setCaptchaValue] = useState(null);
   const recaptchaRef = useRef();
 
+  // --- BADLAAV YAHAN HAI ---
   const validateForm = () => {
     let tempErrors = {};
-    let isValid = true;
+    // isValid ki zaroorat nahin
     const {
       fullName1,
       emailId1,
@@ -79,23 +79,17 @@ const RegistrationForm = () => {
       studentNumber2,
     } = formData;
 
-    // --- Member 1 Checks (Roll & Student No. validation updated) ---
     if (!fullName1.trim() || !/^[a-zA-Z\s]+$/.test(fullName1)) {
       tempErrors.fullName1 =
         "Please enter Member 1's valid name (alphabets only).";
-      isValid = false;
     }
     if (!emailId1.endsWith("@akgec.ac.in")) {
       tempErrors.emailId1 = "Member 1's Email must end with @akgec.ac.in";
-      isValid = false;
     }
     if (!/^[6-9]\d{9}$/.test(phoneNumber1)) {
       tempErrors.phoneNumber1 =
         "Member 1's Phone must be a valid 10-digit number.";
-      isValid = false;
     }
-
-    // NAYA STUDENT NUMBER CHECK
     if (
       !studentNumber1.trim() ||
       !/^\d+$/.test(studentNumber1) ||
@@ -104,56 +98,40 @@ const RegistrationForm = () => {
     ) {
       tempErrors.studentNumber1 =
         "Member 1's Student No must be 7 or 8 digits.";
-      isValid = false;
     }
-
-    // NAYA ROLL NUMBER CHECK
     if (!rollNumber1.trim() || !/^\d{13}$/.test(rollNumber1)) {
       tempErrors.rollNumber1 = "Member 1's Roll No must be exactly 13 digits.";
-      isValid = false;
     } else if (rollNumber1.substring(3, 6) !== "027") {
       tempErrors.rollNumber1 =
         "Member 1's Roll No seems invalid (college code mismatch).";
-      isValid = false;
-    } else if (branch1) {
-      const expectedBranchCode = branchCodes[branch1];
-      const rollBranchCodeSegment = rollNumber1.substring(5, 9);
-      if (!rollBranchCodeSegment.includes(expectedBranchCode)) {
-        tempErrors.rollNumber1 = `Member 1's Roll No does not match selected branch (${branch1}).`;
-        isValid = false;
-      }
+    } else if (
+      branch1 &&
+      branchCodes[branch1] &&
+      !rollNumber1.substring(5, 9).includes(branchCodes[branch1])
+    ) {
+      tempErrors.rollNumber1 = `Member 1's Roll No does not match selected branch (${branch1}).`;
     }
-
     if (!branch1) {
       tempErrors.branch1 = "Please select Member 1's Branch.";
-      isValid = false;
     }
     if (!year1) {
       tempErrors.year1 = "Please select Member 1's year.";
-      isValid = false;
     }
     if (hosteller1 === "") {
       tempErrors.hosteller1 = "Please specify if Member 1 is a hosteller.";
-      isValid = false;
     }
 
-    // --- Member 2 Checks (Roll & Student No. validation updated) ---
     if (!fullName2.trim() || !/^[a-zA-Z\s]+$/.test(fullName2)) {
       tempErrors.fullName2 =
         "Please enter Member 2's valid name (alphabets only).";
-      isValid = false;
     }
     if (!emailId2.endsWith("@akgec.ac.in")) {
       tempErrors.emailId2 = "Member 2's Email must end with @akgec.ac.in";
-      isValid = false;
     }
     if (!/^[6-9]\d{9}$/.test(phoneNumber2)) {
       tempErrors.phoneNumber2 =
         "Member 2's Phone must be a valid 10-digit number.";
-      isValid = false;
     }
-
-    // NAYA STUDENT NUMBER CHECK
     if (
       !studentNumber2.trim() ||
       !/^\d+$/.test(studentNumber2) ||
@@ -162,67 +140,51 @@ const RegistrationForm = () => {
     ) {
       tempErrors.studentNumber2 =
         "Member 2's Student No must be 7 or 8 digits.";
-      isValid = false;
     }
-
-    // NAYA ROLL NUMBER CHECK
     if (!rollNumber2.trim() || !/^\d{13}$/.test(rollNumber2)) {
       tempErrors.rollNumber2 = "Member 2's Roll No must be exactly 13 digits.";
-      isValid = false;
     } else if (rollNumber2.substring(3, 6) !== "027") {
       tempErrors.rollNumber2 =
         "Member 2's Roll No seems invalid (college code mismatch).";
-      isValid = false;
-    } else if (branch2) {
-      const expectedBranchCode = branchCodes[branch2];
-      const rollBranchCodeSegment = rollNumber2.substring(5, 9);
-      if (!rollBranchCodeSegment.includes(expectedBranchCode)) {
-        tempErrors.rollNumber2 = `Member 2's Roll No does not match selected branch (${branch2}).`;
-        isValid = false;
-      }
+    } else if (
+      branch2 &&
+      branchCodes[branch2] &&
+      !rollNumber2.substring(5, 9).includes(branchCodes[branch2])
+    ) {
+      tempErrors.rollNumber2 = `Member 2's Roll No does not match selected branch (${branch2}).`;
     }
-
     if (!branch2) {
       tempErrors.branch2 = "Please select Member 2's Branch.";
-      isValid = false;
     }
     if (!year2) {
       tempErrors.year2 = "Please select Member 2's year.";
-      isValid = false;
     }
     if (hosteller2 === "") {
       tempErrors.hosteller2 = "Please specify if Member 2 is a hosteller.";
-      isValid = false;
     }
 
-    // --- UNIQUENESS & CAPTCHA CHECKS ---
     if (emailId1 && emailId1 === emailId2) {
       tempErrors.emailId1 = "Emails must be different.";
       tempErrors.emailId2 = "Emails must be different.";
-      isValid = false;
     }
     if (phoneNumber1 && phoneNumber1 === phoneNumber2) {
       tempErrors.phoneNumber1 = "Phone numbers must be different.";
       tempErrors.phoneNumber2 = "Phone numbers must be different.";
-      isValid = false;
     }
     if (rollNumber1 && rollNumber1 === rollNumber2) {
       tempErrors.rollNumber1 = "Roll numbers must be different.";
       tempErrors.rollNumber2 = "Roll numbers must be different.";
-      isValid = false;
     }
     if (year1 && year2 && year1 !== year2) {
       tempErrors.year1 = "Both members must be from the same year.";
       tempErrors.year2 = "Both members must be from the same year.";
-      isValid = false;
-    }
-    if (!captchaValue) {
-      tempErrors.captcha = "Please verify you are not a robot.";
-      isValid = false;
     }
 
-    setErrors(tempErrors);
-    return isValid;
+    if (!captchaValue) {
+      tempErrors.captcha = "Please verify you are not a robot.";
+    }
+
+    return tempErrors; // Ab setErrors ki jagah errors ko return karo
   };
 
   const handleChange = (e) => {
@@ -290,14 +252,39 @@ const RegistrationForm = () => {
     }));
   };
 
+  // --- YAHAN BHI BADLAAV KIYA GAYA HAI ---
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
     setIsError(false);
-    if (!validateForm()) return;
+    setErrors({}); // Pehle puraane errors clear karo
+
+    const validationErrors = validateForm(); // Saare errors check karo
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors); // Errors ko state mein set karo (taaki fields ke neeche dikhein)
+      setIsError(true); // Red error box ko activate karo
+
+      // Ab check karo ki galti kya hai
+      if (
+        Object.keys(validationErrors).length === 1 &&
+        validationErrors.captcha
+      ) {
+        // Agar Galti SIRF Captcha ki hai
+        setMessage("Please verify you are not a robot. ❌");
+      } else {
+        // Agar Captcha ke alawa aur bhi galtiyaan hain
+        setMessage(
+          "Registration failed. Please check the errors on your form. ❌"
+        );
+      }
+      return; // Submit mat karo
+    }
+
+    // Yahaan tak code tabhi pahuchega jab koi validation error nahin hoga
     setLoading(true);
-    setErrors({});
     const payload = { ...formData, recaptchaToken: captchaValue };
+
     try {
       const response = await axios.post(
         "https://api.programmingclub.live/api/registration/team",
@@ -419,7 +406,7 @@ const RegistrationForm = () => {
         if (foundSpecificErrors) {
           setErrors(newErrors);
           setMessage(
-            "Registration failed. Please fill the correct details. ❌"
+            "Registration failed. Please check the errors below your fields. ❌"
           );
         } else {
           if (apiErrorMessage.includes("reCAPTCHA")) {
@@ -469,7 +456,7 @@ const RegistrationForm = () => {
           <h3 className={styles.gridHeading}>Member 1 Details</h3>
           <div className={styles.formGroup}>
             <label htmlFor="fullName1" className={styles.label}>
-              Full Name <span>*</span>
+              Full Name (Member 1):<span>*</span>
             </label>
             <input
               type="text"
@@ -488,7 +475,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="emailId1" className={styles.label}>
-              Email <span>*</span>
+              Email (Member 1):<span>*</span>
             </label>
             <input
               type="email"
@@ -498,7 +485,7 @@ const RegistrationForm = () => {
               onChange={handleChange}
               required
               className={styles.input}
-              placeholder="nameStudentno@akgec.ac.in"
+              placeholder="name.studentno@akgec.ac.in"
             />
             <p className={styles.hintText}>Must end with @akgec.ac.in</p>
             {errors.emailId1 && (
@@ -507,7 +494,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="phoneNumber1" className={styles.label}>
-              Phone Number <span>*</span>
+              Phone Number (Member 1):<span>*</span>
             </label>
             <input
               type="tel"
@@ -521,7 +508,7 @@ const RegistrationForm = () => {
               maxLength={10}
             />
             <p className={styles.hintText}>
-              Must be a 10-digit number (e.g., 98765432XX)
+              Must be a 10-digit number (e.g., 9876543210)
             </p>
             {errors.phoneNumber1 && (
               <p className={styles.errorText}>{errors.phoneNumber1}</p>
@@ -529,7 +516,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="rollNumber1" className={styles.label}>
-              Roll Number <span>*</span>
+              Roll Number (Member 1):<span>*</span>
             </label>
             <input
               type="text"
@@ -542,7 +529,9 @@ const RegistrationForm = () => {
               placeholder="Enter 13-digit university roll number"
               maxLength={13}
             />
-            <p className={styles.hintText}>Must be 13 digits</p>
+            <p className={styles.hintText}>
+              Must be 13 digits (e.g., 230027... or 240027...)
+            </p>
             {errors.rollNumber1 && (
               <p className={styles.errorText}>{errors.rollNumber1}</p>
             )}
@@ -579,7 +568,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="studentNumber1" className={styles.label}>
-              Student Number <span>*</span>
+              Student Number (Member 1):<span>*</span>
             </label>
             <input
               type="text"
@@ -600,7 +589,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="year1" className={styles.label}>
-              Year <span>*</span>
+              Year (Member 1):<span>*</span>
             </label>
             <select
               id="year1"
@@ -618,7 +607,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="gender1" className={styles.label}>
-              Gender <span>*</span>
+              Gender (Member 1):<span>*</span>
             </label>
             <select
               id="gender1"
@@ -636,7 +625,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="hosteller1" className={styles.label}>
-              Hosteller <span>*</span>
+              Hosteller (Member 1):<span>*</span>
             </label>
             <select
               id="hosteller1"
@@ -662,7 +651,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup} style={{ gridColumn: "1 / -1" }}>
             <label htmlFor="hackerrankProfile1" className={styles.label}>
-              HackerRank ID
+              HackerRank ID (Member 1):
             </label>
             <input
               type="text"
@@ -671,7 +660,7 @@ const RegistrationForm = () => {
               value={formData.hackerrankProfile1}
               onChange={handleChange}
               className={styles.input}
-              placeholder="Enter HackerRank username "
+              placeholder="Enter HackerRank username (Optional)"
             />
             {errors.hackerrankProfile1 && (
               <p className={styles.errorText}>{errors.hackerrankProfile1}</p>
@@ -681,7 +670,7 @@ const RegistrationForm = () => {
           <h3 className={styles.gridHeading}>Member 2 Details</h3>
           <div className={styles.formGroup}>
             <label htmlFor="fullName2" className={styles.label}>
-              Full Name <span>*</span>
+              Full Name (Member 2):<span>*</span>
             </label>
             <input
               type="text"
@@ -700,7 +689,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="emailId2" className={styles.label}>
-              Email <span>*</span>
+              Email (Member 2):<span>*</span>
             </label>
             <input
               type="email"
@@ -710,7 +699,7 @@ const RegistrationForm = () => {
               onChange={handleChange}
               required
               className={styles.input}
-              placeholder="nameStudentno@akgec.ac.in"
+              placeholder="name.studentno@akgec.ac.in"
             />
             <p className={styles.hintText}>Must end with @akgec.ac.in</p>
             {errors.emailId2 && (
@@ -719,7 +708,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="phoneNumber2" className={styles.label}>
-              Phone Number <span>*</span>
+              Phone Number (Member 2):<span>*</span>
             </label>
             <input
               type="tel"
@@ -733,7 +722,7 @@ const RegistrationForm = () => {
               maxLength={10}
             />
             <p className={styles.hintText}>
-              Must be a 10-digit number (e.g., 98765432XX)
+              Must be a 10-digit number (e.g., 9876543210)
             </p>
             {errors.phoneNumber2 && (
               <p className={styles.errorText}>{errors.phoneNumber2}</p>
@@ -741,7 +730,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="rollNumber2" className={styles.label}>
-              Roll Number :<span>*</span>
+              Roll Number (Member 2):<span>*</span>
             </label>
             <input
               type="text"
@@ -754,14 +743,16 @@ const RegistrationForm = () => {
               placeholder="Enter 13-digit university roll number"
               maxLength={13}
             />
-            <p className={styles.hintText}>Must be 13 digits</p>
+            <p className={styles.hintText}>
+              Must be 13 digits (e.g., 230027... or 240027...)
+            </p>
             {errors.rollNumber2 && (
               <p className={styles.errorText}>{errors.rollNumber2}</p>
             )}
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="branch2" className={styles.label}>
-              Branch <span>*</span>
+              Branch (Member 2):<span>*</span>
             </label>
             <select
               id="branch2"
@@ -791,7 +782,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="studentNumber2" className={styles.label}>
-              Student Number <span>*</span>
+              Student Number (Member 2):<span>*</span>
             </label>
             <input
               type="text"
@@ -812,7 +803,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="year2" className={styles.label}>
-              Year <span>*</span>
+              Year (Member 2):<span>*</span>
             </label>
             <select
               id="year2"
@@ -830,7 +821,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="gender2" className={styles.label}>
-              Gender <span>*</span>
+              Gender (Member 2):<span>*</span>
             </label>
             <select
               id="gender2"
@@ -848,7 +839,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="hosteller2" className={styles.label}>
-              Hosteller <span>*</span>
+              Hosteller (Member 2):<span>*</span>
             </label>
             <select
               id="hosteller2"
@@ -874,7 +865,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup} style={{ gridColumn: "1 / -1" }}>
             <label htmlFor="hackerrankProfile2" className={styles.label}>
-              HackerRank ID :
+              HackerRank ID
             </label>
             <input
               type="text"
@@ -883,7 +874,7 @@ const RegistrationForm = () => {
               value={formData.hackerrankProfile2}
               onChange={handleChange}
               className={styles.input}
-              placeholder="Enter HackerRank ID"
+              placeholder="Enter HackerRank username "
             />
             {errors.hackerrankProfile2 && (
               <p className={styles.errorText}>{errors.hackerrankProfile2}</p>
