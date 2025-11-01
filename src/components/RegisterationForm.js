@@ -3,6 +3,26 @@ import axios from "axios";
 import styles from "./RegisterationForm.module.css";
 import ReCAPTCHA from "react-google-recaptcha";
 
+// Aapka diya gaya branchCodes object
+const branchCodes = {
+  ME: "40",
+  ECE: "31",
+  EE: "21",
+  "CSE(Hindi)": "169",
+  "CSE (Hindi)": "169",
+  AIML: "164",
+  "CSE(DS)": "154",
+  "CSE (DS)": "154",
+  "CSE(AIML)": "153",
+  "CSE (AIML)": "153",
+  IT: "13",
+  CS: "12",
+  CSIT: "11",
+  "CS IT": "11",
+  CSE: "10",
+  CE: "0",
+};
+
 const RegistrationForm = () => {
   const [formData, setFormData] = useState({
     teamName: "",
@@ -45,6 +65,7 @@ const RegistrationForm = () => {
       rollNumber1,
       branch1,
       year1,
+      hackerrankProfile1,
       hosteller1,
       studentNumber1,
       fullName2,
@@ -53,10 +74,12 @@ const RegistrationForm = () => {
       rollNumber2,
       branch2,
       year2,
+      hackerrankProfile2,
       hosteller2,
       studentNumber2,
     } = formData;
 
+    // --- Member 1 Checks (Roll & Student No. validation updated) ---
     if (!fullName1.trim() || !/^[a-zA-Z\s]+$/.test(fullName1)) {
       tempErrors.fullName1 =
         "Please enter Member 1's valid name (alphabets only).";
@@ -71,17 +94,38 @@ const RegistrationForm = () => {
         "Member 1's Phone must be a valid 10-digit number.";
       isValid = false;
     }
-    if (!rollNumber1.trim() || !/^\d+$/.test(rollNumber1)) {
-      tempErrors.rollNumber1 = "Member 1's Roll No must contain only digits.";
+
+    // NAYA STUDENT NUMBER CHECK
+    if (
+      !studentNumber1.trim() ||
+      !/^\d+$/.test(studentNumber1) ||
+      studentNumber1.length < 7 ||
+      studentNumber1.length > 8
+    ) {
+      tempErrors.studentNumber1 =
+        "Member 1's Student No must be 7 or 8 digits.";
       isValid = false;
     }
+
+    // NAYA ROLL NUMBER CHECK
+    if (!rollNumber1.trim() || !/^\d{13}$/.test(rollNumber1)) {
+      tempErrors.rollNumber1 = "Member 1's Roll No must be exactly 13 digits.";
+      isValid = false;
+    } else if (rollNumber1.substring(3, 6) !== "027") {
+      tempErrors.rollNumber1 =
+        "Member 1's Roll No seems invalid (college code mismatch).";
+      isValid = false;
+    } else if (branch1) {
+      const expectedBranchCode = branchCodes[branch1];
+      const rollBranchCodeSegment = rollNumber1.substring(5, 9);
+      if (!rollBranchCodeSegment.includes(expectedBranchCode)) {
+        tempErrors.rollNumber1 = `Member 1's Roll No does not match selected branch (${branch1}).`;
+        isValid = false;
+      }
+    }
+
     if (!branch1) {
       tempErrors.branch1 = "Please select Member 1's Branch.";
-      isValid = false;
-    }
-    if (!studentNumber1.trim() || !/^\d+$/.test(studentNumber1)) {
-      tempErrors.studentNumber1 =
-        "Member 1's Student No must contain only digits.";
       isValid = false;
     }
     if (!year1) {
@@ -93,6 +137,7 @@ const RegistrationForm = () => {
       isValid = false;
     }
 
+    // --- Member 2 Checks (Roll & Student No. validation updated) ---
     if (!fullName2.trim() || !/^[a-zA-Z\s]+$/.test(fullName2)) {
       tempErrors.fullName2 =
         "Please enter Member 2's valid name (alphabets only).";
@@ -107,17 +152,38 @@ const RegistrationForm = () => {
         "Member 2's Phone must be a valid 10-digit number.";
       isValid = false;
     }
-    if (!rollNumber2.trim() || !/^\d+$/.test(rollNumber2)) {
-      tempErrors.rollNumber2 = "Member 2's Roll No must contain only digits.";
+
+    // NAYA STUDENT NUMBER CHECK
+    if (
+      !studentNumber2.trim() ||
+      !/^\d+$/.test(studentNumber2) ||
+      studentNumber2.length < 7 ||
+      studentNumber2.length > 8
+    ) {
+      tempErrors.studentNumber2 =
+        "Member 2's Student No must be 7 or 8 digits.";
       isValid = false;
     }
+
+    // NAYA ROLL NUMBER CHECK
+    if (!rollNumber2.trim() || !/^\d{13}$/.test(rollNumber2)) {
+      tempErrors.rollNumber2 = "Member 2's Roll No must be exactly 13 digits.";
+      isValid = false;
+    } else if (rollNumber2.substring(3, 6) !== "027") {
+      tempErrors.rollNumber2 =
+        "Member 2's Roll No seems invalid (college code mismatch).";
+      isValid = false;
+    } else if (branch2) {
+      const expectedBranchCode = branchCodes[branch2];
+      const rollBranchCodeSegment = rollNumber2.substring(5, 9);
+      if (!rollBranchCodeSegment.includes(expectedBranchCode)) {
+        tempErrors.rollNumber2 = `Member 2's Roll No does not match selected branch (${branch2}).`;
+        isValid = false;
+      }
+    }
+
     if (!branch2) {
       tempErrors.branch2 = "Please select Member 2's Branch.";
-      isValid = false;
-    }
-    if (!studentNumber2.trim() || !/^\d+$/.test(studentNumber2)) {
-      tempErrors.studentNumber2 =
-        "Member 2's Student No must contain only digits.";
       isValid = false;
     }
     if (!year2) {
@@ -129,6 +195,7 @@ const RegistrationForm = () => {
       isValid = false;
     }
 
+    // --- UNIQUENESS & CAPTCHA CHECKS ---
     if (emailId1 && emailId1 === emailId2) {
       tempErrors.emailId1 = "Emails must be different.";
       tempErrors.emailId2 = "Emails must be different.";
@@ -149,7 +216,6 @@ const RegistrationForm = () => {
       tempErrors.year2 = "Both members must be from the same year.";
       isValid = false;
     }
-
     if (!captchaValue) {
       tempErrors.captcha = "Please verify you are not a robot.";
       isValid = false;
@@ -273,6 +339,13 @@ const RegistrationForm = () => {
       recaptchaRef.current.reset();
       setCaptchaValue(null);
 
+      if (error.code === "ERR_NETWORK" || !error.response) {
+        setMessage(
+          "Registration failed. Cannot connect to server. Please check your internet. ❌"
+        );
+        return;
+      }
+
       const apiErrorsObject = error.response?.data?.errors;
       const apiErrorMessage = error.response?.data?.message;
 
@@ -290,21 +363,50 @@ const RegistrationForm = () => {
           apiErrorsObject.year1 = apiErrorsObject.year2;
         }
         setErrors(apiErrorsObject);
-        setMessage("Registration failed. Please check the errors below. ❌");
+        setMessage(
+          "Registration failed. Please check the errors below your fields. ❌"
+        );
       } else if (apiErrorMessage && typeof apiErrorMessage === "string") {
         const newErrors = {};
+        if (
+          apiErrorMessage.includes("duplicate key") ||
+          apiErrorMessage.includes("already exists")
+        ) {
+          setMessage(
+            "Registration failed: A user with this email, phone, or roll number already exists. ❌"
+          );
+          if (apiErrorMessage.includes("email")) {
+            newErrors.emailId1 = "This email might already be registered.";
+            newErrors.emailId2 = "This email might already be registered.";
+          }
+          if (apiErrorMessage.includes("student_number")) {
+            newErrors.studentNumber1 =
+              "This student number might already be registered.";
+            newErrors.studentNumber2 =
+              "This student number might already be registered.";
+          }
+          if (apiErrorMessage.includes("roll_number")) {
+            newErrors.rollNumber1 =
+              "This roll number might already be registered.";
+            newErrors.rollNumber2 =
+              "This roll number might already be registered.";
+          }
+          setErrors(newErrors);
+          return;
+        }
+
         const errorString = apiErrorMessage.replace(
           "Registration failed. ",
           ""
         );
         const errorParts = errorString.split(", ");
-
+        let foundSpecificErrors = false;
         errorParts.forEach((part) => {
           const splitPoint = part.indexOf(":");
           if (splitPoint > -1) {
+            foundSpecificErrors = true;
             const key = part.substring(0, splitPoint).trim();
             const value = part.substring(splitPoint + 1).trim();
-
             if (key.includes("year") && value.includes("same year")) {
               newErrors.year1 = value;
               newErrors.year2 = value;
@@ -314,14 +416,26 @@ const RegistrationForm = () => {
           }
         });
 
-        if (Object.keys(newErrors).length > 0) {
+        if (foundSpecificErrors) {
           setErrors(newErrors);
-          setMessage("Registration failed. Please check the errors below. ❌");
+          setMessage(
+            "Registration failed. Please fill the correct details. ❌"
+          );
         } else {
-          setMessage(`Registration failed. ${apiErrorMessage} ❌`);
+          if (apiErrorMessage.includes("reCAPTCHA")) {
+            setMessage(
+              "Registration failed: reCAPTCHA verification failed. Please try again. ❌"
+            );
+          } else {
+            setMessage(`Registration failed: ${apiErrorMessage} ❌`);
+          }
         }
+      } else if (error.response?.status === 500) {
+        setMessage(
+          "Registration failed: An internal server error occurred. Please contact support. ❌"
+        );
       } else {
-        setMessage("Registration failed. Please try again. ❌");
+        setMessage("Registration failed. An unknown error occurred. ❌");
       }
     }
   };
@@ -367,6 +481,7 @@ const RegistrationForm = () => {
               className={styles.input}
               placeholder="Enter member 1's full name"
             />
+            <p className={styles.hintText}>Only letters and spaces allowed.</p>
             {errors.fullName1 && (
               <p className={styles.errorText}>{errors.fullName1}</p>
             )}
@@ -385,6 +500,7 @@ const RegistrationForm = () => {
               className={styles.input}
               placeholder="nameStudentno@akgec.ac.in"
             />
+            <p className={styles.hintText}>Must end with @akgec.ac.in</p>
             {errors.emailId1 && (
               <p className={styles.errorText}>{errors.emailId1}</p>
             )}
@@ -401,9 +517,12 @@ const RegistrationForm = () => {
               onChange={handleChange}
               required
               className={styles.input}
-              placeholder="Enter 10-digit mobile number"
+              placeholder="10-digit mobile number"
               maxLength={10}
             />
+            <p className={styles.hintText}>
+              Must be a 10-digit number (e.g., 98765432XX)
+            </p>
             {errors.phoneNumber1 && (
               <p className={styles.errorText}>{errors.phoneNumber1}</p>
             )}
@@ -420,15 +539,17 @@ const RegistrationForm = () => {
               onChange={handleChange}
               required
               className={styles.input}
-              placeholder="Enter university roll number"
+              placeholder="Enter 13-digit university roll number"
+              maxLength={13}
             />
+            <p className={styles.hintText}>Must be 13 digits</p>
             {errors.rollNumber1 && (
               <p className={styles.errorText}>{errors.rollNumber1}</p>
             )}
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="branch1" className={styles.label}>
-              Branch <span>*</span>
+              Branch (Member 1):<span>*</span>
             </label>
             <select
               id="branch1"
@@ -468,8 +589,11 @@ const RegistrationForm = () => {
               onChange={handleChange}
               required
               className={styles.input}
-              placeholder="Enter student number"
+              placeholder="Enter 7 or 8 digit student number"
             />
+            <p className={styles.hintText}>
+              Must be 7 or 8 digits and numbers only.
+            </p>
             {errors.studentNumber1 && (
               <p className={styles.errorText}>{errors.studentNumber1}</p>
             )}
@@ -547,7 +671,7 @@ const RegistrationForm = () => {
               value={formData.hackerrankProfile1}
               onChange={handleChange}
               className={styles.input}
-              placeholder="Enter HackerRank ID "
+              placeholder="Enter HackerRank username "
             />
             {errors.hackerrankProfile1 && (
               <p className={styles.errorText}>{errors.hackerrankProfile1}</p>
@@ -569,6 +693,7 @@ const RegistrationForm = () => {
               className={styles.input}
               placeholder="Enter member 2's full name"
             />
+            <p className={styles.hintText}>Only letters and spaces allowed.</p>
             {errors.fullName2 && (
               <p className={styles.errorText}>{errors.fullName2}</p>
             )}
@@ -587,6 +712,7 @@ const RegistrationForm = () => {
               className={styles.input}
               placeholder="nameStudentno@akgec.ac.in"
             />
+            <p className={styles.hintText}>Must end with @akgec.ac.in</p>
             {errors.emailId2 && (
               <p className={styles.errorText}>{errors.emailId2}</p>
             )}
@@ -603,16 +729,19 @@ const RegistrationForm = () => {
               onChange={handleChange}
               required
               className={styles.input}
-              placeholder="Enter 10-digit mobile number"
+              placeholder="10-digit mobile number"
               maxLength={10}
             />
+            <p className={styles.hintText}>
+              Must be a 10-digit number (e.g., 98765432XX)
+            </p>
             {errors.phoneNumber2 && (
               <p className={styles.errorText}>{errors.phoneNumber2}</p>
             )}
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="rollNumber2" className={styles.label}>
-              Roll Number <span>*</span>
+              Roll Number :<span>*</span>
             </label>
             <input
               type="text"
@@ -622,8 +751,10 @@ const RegistrationForm = () => {
               onChange={handleChange}
               required
               className={styles.input}
-              placeholder="Enter university roll number"
+              placeholder="Enter 13-digit university roll number"
+              maxLength={13}
             />
+            <p className={styles.hintText}>Must be 13 digits</p>
             {errors.rollNumber2 && (
               <p className={styles.errorText}>{errors.rollNumber2}</p>
             )}
@@ -670,8 +801,11 @@ const RegistrationForm = () => {
               onChange={handleChange}
               required
               className={styles.input}
-              placeholder="Enter student number"
+              placeholder="Enter 7 or 8 digit student number"
             />
+            <p className={styles.hintText}>
+              Must be 7 or 8 digits and numbers only.
+            </p>
             {errors.studentNumber2 && (
               <p className={styles.errorText}>{errors.studentNumber2}</p>
             )}
@@ -740,7 +874,7 @@ const RegistrationForm = () => {
           </div>
           <div className={styles.formGroup} style={{ gridColumn: "1 / -1" }}>
             <label htmlFor="hackerrankProfile2" className={styles.label}>
-              HackerRank ID
+              HackerRank ID :
             </label>
             <input
               type="text"

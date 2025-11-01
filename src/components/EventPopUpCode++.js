@@ -46,21 +46,20 @@ function EventPopup() {
           <ul className="event-info">
             <li>📅 Date: Nov 04, 2025 </li>
             <li>⏰ Time: 4:00 PM - 7:00 PM</li>
-            <li>📍 Venue: CSIT BLOCK</li>
+            <li>📍 Venue: 3rd floor,CSIT BLOCK</li>
+            {/* <li>🏆 Prize Pool: ₹6000 </li> */}
           </ul>
           <p className="event-description">
             Why participate?
             <ul>
               <li>Compete with the best coders in the college.</li>
               <li>Solve challenging algorithmic problems.</li>
-              <li>Win exciting prizes, certificates, and recognition.</li>
+              <li>Win exciting prizes and recognition.</li>
               <li>
                 Boost your skills for technical interviews and future contests.
               </li>
             </ul>
           </p>
-
-          {/* --- DETAILS YAHAN KHATAM --- */}
         </div>
       </Modal.Body>
       <Modal.Footer>
